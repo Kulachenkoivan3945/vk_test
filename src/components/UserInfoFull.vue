@@ -1,11 +1,11 @@
 <template>
-  <div class="user-info-full">
+  <div class="user-info-full" :style="{'background-color' :panelBgColor}">
     <img :src="userInfo.photo_100" alt="">
     <div class="user-data">
       <p class="name">{{ userInfo.first_name }} {{ userInfo.last_name }}</p>
       <p class="bdate">Дата рождения: {{ bDate }}</p>
       <p class="sex">Пол: {{ sex }}</p>
-      <p class="friends" v-if="mode=='friends'">В друзьях у: {{ userInfo.commomFriends.length }} пользователя</p>
+      <p class="friends" v-if="mode == 'friends'">В друзьях у: {{ userInfo.commomFriends.length }} пользователя</p>
     </div>
     <div class="actions">
       <button v-if="!isInSorceList" class="btn-add" @click="addToSourceList">Добавить</button>
@@ -19,9 +19,10 @@
 export default {
   name: 'UserInfoFull',
   props: ['userInfo', 'mode'],
-  data(){
-    return{
-      isInSorceList: this.$store.getters.isInSourceList(this.userInfo.id)
+  data() {
+    return {
+      isInSorceList: this.$store.getters.isInSourceList(this.userInfo.id),
+
     }
   },
   computed: {
@@ -37,15 +38,24 @@ export default {
     bDate() {
       if (!this.userInfo.bdate) return 'не указана';
       else return this.userInfo.bdate;
+    },
+    panelBgColor() {
+      if (this.mode !== 'friends') return 'white'
+      else{
+        let brightness = 255 - ((this.userInfo.commomFriends.length - 1)*20);
+        if(brightness<0) brightness = 0;
+        let color = `rgba(${brightness},255,${brightness},0.8)`;
+        return color;
+      }
     }
   },
-  methods:{
-    addToSourceList(){
-      this.$store.commit('addToSourceList',this.userInfo);
+  methods: {
+    addToSourceList() {
+      this.$store.commit('addToSourceList', this.userInfo);
       this.isInSorceList = true;
     },
-    removeFromSourceList(){
-      this.$store.commit('removeFromSourceList',this.userInfo);
+    removeFromSourceList() {
+      this.$store.commit('removeFromSourceList', this.userInfo);
       this.isInSorceList = false;
     }
   }
@@ -57,7 +67,7 @@ export default {
 .user-info-full {
   display: flex;
   flex-direction: row;
-  padding: 5px;
+  padding: 15px;
   align-items: center;
 }
 
@@ -70,14 +80,15 @@ export default {
   height: 100%;
 }
 
-.actions{
+.actions {
   margin-left: auto;
 }
 
-p{
+p {
   text-align: left;
   line-height: 1.5rem;
 }
+
 img {
   /*min-height: 100%;
   min-width: 130px;

@@ -101,7 +101,6 @@ ul {
 
 li {
   flex-basis: 50%;
-  padding: 15px;
   border-bottom: var(--border-light-gray);
   border-right: var(--border-light-gray);
 }
