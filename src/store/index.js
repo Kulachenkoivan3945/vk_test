@@ -2,7 +2,8 @@ import { createStore } from "vuex";
 export default createStore({
   state: {
     apiConfig: {
-      appID: "51774176",
+      /* appID: "51774176", */
+      appID: "51776175",
       version: "5.154",
     },
     searchResults: [],
