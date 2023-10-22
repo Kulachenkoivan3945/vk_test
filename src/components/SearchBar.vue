@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import VK from 'vk-openapi';
+import vk_api from '@/services/service.js';
 import UserInfoMin from '@/components/UserInfoMin.vue'
 import _ from 'lodash'
 export default {
@@ -32,7 +32,6 @@ export default {
   },
   data() {
     return {
-      apiConfig: this.$store.state.apiConfig,
       query: '',
       autoCompleteResults: [],
       isSearched: false
@@ -59,16 +58,15 @@ export default {
   methods: {
     selectQueryItem(item) {
       this.query = `${item.first_name} ${item.last_name}`;
-      this.fastSearch();
+      /*       this.fastSearch(); */
       this.search();
     },
     search() {
-      this.isSearched = true;
-      VK.Api.call(
+      this.isSearched = false;
+      vk_api.getInfo(
         "users.search",
         {
           q: this.query,
-          v: this.apiConfig.version,
           fields: "sex,photo_100,bdate",
           count: 100,
           language: "ru",
@@ -82,17 +80,16 @@ export default {
             this.$store.commit('setSearchResults', []);
           }
         }
-      );
+      )
     },
-    fastSearch: _.debounce(function() {
+    fastSearch: _.debounce(function () {
       this.isSearched = true;
-      VK.Api.call(
+      vk_api.getInfo(
         "users.search",
         {
           q: this.query,
-          v: this.apiConfig.version,
-          count: 5,
           fields: "photo_50",
+          count: 5,
           language: "ru",
         },
         (res) => {
@@ -104,14 +101,11 @@ export default {
             this.autoCompleteResults = [];
           }
         }
-      );
-    },200)
+      )
+    }, 200)
   },
   created() {
-    VK.init({
-      apiId: this.apiConfig.appID,
-    });
-    
+
   },
   mounted() {
     /* document.querySelector('.search-container').style.height = '40px' */
@@ -127,6 +121,7 @@ export default {
   transition: all 0.6s ease-in-out;
 }
 
+
 label {
   position: relative;
 }
@@ -137,6 +132,7 @@ label img {
   left: 5px;
   top: -5px;
   height: 25px;
+
 }
 
 label button {

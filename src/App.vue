@@ -1,7 +1,22 @@
 <template>
-  <router-view />
+  <router-view v-slot="{ Component }">
+    <keep-alive >
+      <component :is="Component" v-if="$route.meta.keepAlive"/>
+    </keep-alive>
+    <component :is="Component" v-if="!$route.meta.keepAlive"/>
+  </router-view>
 </template>
 
+
+<!-- vue-router.mjs:35  [Vue Router warn]: <router-view> can no longer be used directly inside <transition> or <keep-alive>.
+  Use slot props instead:
+  
+  <router-view v-slot="{ Component }">
+    <keep-alive>
+      <component :is="Component" />
+    </keep-alive>
+  </router-view> -->
+  
 <script>
 export default {
   name: 'App',
@@ -12,8 +27,8 @@ export default {
     }
   },
   created() {
-    if (sessionStorage.getItem('sourceList')) {
-      this.$store.commit('setSourceList', JSON.parse(sessionStorage.getItem('sourceList')))
+    if (localStorage.getItem('sourceList')) {
+      this.$store.commit('setSourceList', JSON.parse(localStorage.getItem('sourceList')))
     }
   }
 };
@@ -49,19 +64,21 @@ export default {
   border-radius: 10px;
   border: var(--border-light-gray);
   cursor: pointer;
-  background-color:var(--color-blue);
+  background-color: var(--color-blue);
   color: rgba(255, 255, 255, 0.942);
   transition: all 0.5s ease-in-out;
 }
-.btn-add:hover{
+
+.btn-add:hover {
   background-color: var(--color-green);
 }
+
 .btn-added {
   background-color: #f0f0f0;
   color: rgb(77, 77, 77);
 }
 
-.btn-added:hover{
+.btn-added:hover {
   background-color: rgb(164, 44, 44);
   color: white;
 }
@@ -69,8 +86,9 @@ export default {
 :root {
   --border-light-gray: 1px solid rgb(187, 187, 187);
   --shadow-light-gary: rgba(188, 188, 188, 0.496);
-  --color-blue:  rgb(9, 9, 144);
+  --color-blue: rgb(9, 9, 144);
   --color-green: rgb(9, 144, 90);
+  --shadow-gray: rgb(43, 43, 43);
 }
 
 #app {

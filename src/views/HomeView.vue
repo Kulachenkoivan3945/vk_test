@@ -29,7 +29,8 @@
 import SearchBar from '@/components/SearchBar.vue'
 import UsersList from '@/components/UsersList.vue'
 import { mapState } from 'vuex'
-import VK from 'vk-openapi';
+import vk_api from '@/services/service.js';
+/* import VK from 'vk-openapi'; */
 
 export default {
   name: 'HomeView',
@@ -39,7 +40,6 @@ export default {
   },
   data() {
     return {
-      apiConfig: this.$store.state.apiConfig,
       isSourceListShowed: true,
       isFriendsListShowed: false,
       friendsList: []
@@ -64,12 +64,11 @@ export default {
       this.isFriendsListShowed = true;
     },
     getUserFriends(id) {
-      VK.Api.call(
+      vk_api.getInfo(
         "friends.get",
         {
           user_id: id,
           fields: "sex,photo_100,bdate",
-          v: this.apiConfig.version
         },
         (res) => {
           res.response.items.forEach(el => {
@@ -83,14 +82,12 @@ export default {
             }
           })
         }
-      );
+      )
+
     }
 
   },
   created() {
-    VK.init({
-      apiId: this.apiConfig.appID,
-    });
   }
 }
 </script>

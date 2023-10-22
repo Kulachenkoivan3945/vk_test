@@ -1,6 +1,6 @@
 <template>
   
-  <div class="user-info-full" :class="{'friend-card' :mode === 'friends'}" :style="{'background-color' :panelBgColor}"
+  <div class="user-info-full" :class="{'friendCard' :mode === 'friends'}" :style="{'background-color' :panelBgColor}"
   @click="toPage">
     <img :src="userInfo.photo_100" alt="">
     <div class="user-data">
@@ -11,7 +11,7 @@
     </div>
     <div class="actions">
       <button v-if="!isInSorceList" class="btn-add" @click.stop="addToSourceList">Добавить</button>
-      <button v-else class="btn-add btn-added" @click.stop="removeFromSourceList">Удалить</button>
+      <button v-else class="btn-add btn-added" @click="removeFromSourceList">Удалить</button>
     </div>
   </div>
 
@@ -57,8 +57,9 @@ export default {
   },
   methods: {
     toPage(){
-      if(this.mode !=='friends') return;
-      this.$router.push(`/user/${this.userInfo.id}`);
+      if(this.mode !=='friends'){
+
+      }
     },
     addToSourceList() {
       this.$store.commit('addToSourceList', this.userInfo);
