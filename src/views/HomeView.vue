@@ -18,7 +18,7 @@
     <section class="friends">
       <button class="btn-add" v-if="!isFriendsListShowed" @click="buildFriendsList">Построить</button>
       <UsersList v-else :items="friendsList" :startState="isFriendsListShowed" :mode="'friends'"
-        :title="'Количество пользователей в исходном списке : '" @onHide="isFriendsListShowed = false">
+        :title="'Количество пользователей в списке друзей: '" @onHide="isFriendsListShowed = false">
       </UsersList>
     </section>
   </div>
