@@ -1,10 +1,10 @@
 <template>
-  <div class="list-control" v-if="isShowed">
+  <div class="list-control">
     <h3>{{ title }} {{ items.length }}</h3>
     <img src="../assets/images/icons/close.png" alt="" @click="hideList">
   </div>
   <transition name="fade-to-top">
-    <div v-if="isShowed && showedResults.length > 0">
+    <div v-if="showedResults.length > 0">
       <ul :id="mode + 'List'">
         <li v-for="item in showedResults" :key="item">
           <UserInfoFull :userInfo="item" :mode="mode" :isNoActions="mode === 'friends'"></UserInfoFull>
@@ -43,13 +43,11 @@ export default {
   },
   computed: {
     pagesCount() {
-      console.log(1);
-      /*   this.setPagesCount(Math.ceil(this.items.length / this.showedCount)); */
       return Math.ceil(this.items.length / this.showedCount);
     },
     showedResults() {
-      let results = JSON.parse(JSON.stringify(this.items));
-      return results.splice(this.showedCount * this.activePage, this.showedCount);
+      /* let results = JSON.parse(JSON.stringify(this.items)); */
+      return JSON.parse(JSON.stringify(this.items)).splice(this.showedCount * this.activePage, this.showedCount);
     }
   },
   watch: {
@@ -57,18 +55,13 @@ export default {
       if (newValue.length > 0) this.isShowed = true;
     },
     items() {
-      console.log(18)
       this.setPagesCount(Math.ceil(this.items.length / this.showedCount));
-    },
-    pagesList(newValue) {
-      console.log(newValue)
     }
   },
   methods: {
     setPagesCount(n) {
       if (this.pagesList.length < 5) {
         this.pagesList = [];
-        console.log(15);
         for (let i = 0; i < n; i++) {
           this.pagesList.push(i);
           if (i == 4) return;
@@ -77,15 +70,11 @@ export default {
     },
     getToPage(n) {
       this.activePage = this.getNextPageNumber(n);
-      console.log(this.activePage);
       let ul = document.querySelector(`#${this.mode}List`);
       ul.scrollIntoView({ behavior: 'smooth' })
 
     },
     getNextPageNumber(n) {
-      console.log(n);
-      console.log(this.activePage);
-      console.log(this.pagesList[0]);
       if (n == -2) {
         this.pagesList = [];
         for (let i = 5; i >=1; i--) {
@@ -201,11 +190,8 @@ export default {
       }
     },
     hideList() {
-      this.isShowed = false;
+/*       this.isShowed = false; */
       this.$emit('onHide');
-      /* if (this.mode == 'source' || this.mode == 'friends') {
-        this.$emit('onHide');
-      } */
 
     }
   },
@@ -276,7 +262,7 @@ li:nth-child(2n) {
 }
 
 .active-page {
-  color: red;
+  color: red !important;
 }
 
 

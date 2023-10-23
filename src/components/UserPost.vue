@@ -305,6 +305,9 @@ p {
   width: 100%;
 }
 
+.links img{
+  width: 100%;
+}
 .link-image-wrapper {}
 
 .link-image-wrapper div {

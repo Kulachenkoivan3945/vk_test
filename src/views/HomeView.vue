@@ -44,7 +44,7 @@ export default {
   },
   data() {
     return {
-      isSearchListShowed: true,
+      isSearchListShowed: false,
       isSourceListShowed: true,
       isFriendsListShowed: false,
       friendsList: [],

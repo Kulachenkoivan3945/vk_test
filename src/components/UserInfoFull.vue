@@ -24,11 +24,13 @@ export default {
   props: ['userInfo', 'mode', 'isNoActions'],
   data() {
     return {
-      isInSorceList: this.$store.getters.isInSourceList(this.userInfo.id),
 
     }
   },
   computed: {
+    isInSorceList(){
+      return this.$store.getters.isInSourceList(this.userInfo.id)
+    },
     sex() {
       switch (this.userInfo.sex) {
         case 1:
@@ -97,10 +99,11 @@ img {
   align-items: center;
 }
 
-.user-info{
+.user-info {
   display: flex;
   flex-direction: row;
 }
+
 .user-data {
   align-self: flex-start;
   margin-left: 15px;
@@ -124,11 +127,12 @@ p {
   .user-info-full {
     flex-direction: column;
   }
-  .user-info{
+
+  .user-info {
     align-self: start;
   }
 
-  .actions{
+  .actions {
     width: 100%;
     margin: 0;
     margin-top: 10px;
@@ -156,12 +160,12 @@ p {
     align-items: center;
     width: 100%;
   }
-  .user-data{
+
+  .user-data {
     margin: 0;
     width: 100%;
     align-items: center;
     text-align: center;
   }
 
-}
-</style>
+}</style>
