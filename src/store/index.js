@@ -8,6 +8,7 @@ export default createStore({
     },
     searchResults: [],
     sourceList: [],
+    friendsInSource: []
   },
   getters: {
     isInSourceList: (state) => (itemID) => {
@@ -15,10 +16,17 @@ export default createStore({
       if (index == -1) return false;
       else return true;
     },
+    getFriendsInSource: (state) => {
+      return state.friendsInSource; 
+    },
   },
   mutations: {
     setSourceList(state, items) {
       state.sourceList = items;
+    },
+    setFriendsInSource(state, items) {
+      state.friendsInSource = items;
+      localStorage.setItem("friendsInSource", JSON.stringify(state.friendsInSource));
     },
     setSearchResults(state, items) {
       state.searchResults = items;
@@ -34,7 +42,7 @@ export default createStore({
     },
   },
   actions: {
-    
+
   },
   modules: {},
 });

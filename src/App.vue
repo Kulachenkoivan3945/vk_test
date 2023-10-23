@@ -30,6 +30,9 @@ export default {
     if (localStorage.getItem('sourceList')) {
       this.$store.commit('setSourceList', JSON.parse(localStorage.getItem('sourceList')))
     }
+    if (localStorage.getItem('friendsInSource')) {
+      this.$store.commit('setFriendsInSource', JSON.parse(localStorage.getItem('friendsInSource')))
+    }
   }
 };
 </script>
@@ -97,6 +100,12 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
 
 * {

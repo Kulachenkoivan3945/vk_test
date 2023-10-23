@@ -74,9 +74,11 @@ export default {
         (res) => {
           try {
             this.$store.commit('setSearchResults', res.response.items);
+            this.$emit('onSearched');
           }
           catch {
             this.isSearched = false;
+            this.$emit('onSearched');
             this.$store.commit('setSearchResults', []);
           }
         }
@@ -179,4 +181,6 @@ input {
   transform: scale(1.1);
   color: white;
 }
+
+
 </style>

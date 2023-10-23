@@ -1,18 +1,18 @@
 <template>
   <div class="home">
     <section class="search">
-      <SearchBar></SearchBar>
+      <SearchBar @onSearched="setSearchResults"></SearchBar>
     </section>
     <section class="search-results">
-      <UsersList :items="searchResults" :startState="false" :mode="'search'" :title="'Количество результатов по вашему запросу : '"
-      >
+      <UsersList :items="searchResults" v-if="isSearchListShowed" :startState="false" :mode="'search'"
+        :title="'Количество результатов по вашему запросу : '" @onHide="isSearchListShowed = false">
       </UsersList>
     </section>
     <section class="source-list">
       <button class="btn-add" v-if="!isSourceListShowed" @click="isSourceListShowed = true">Показать исходный
         список</button>
       <UsersList v-else :items="sourceList" :startState="isSourceListShowed" :mode="'source'"
-        :title="'Количество пользователей в исходном списке : '" @onHide="isSourceListShowed = false" >
+        :title="'Количество пользователей в исходном списке : '" @onHide="isSourceListShowed = false">
       </UsersList>
     </section>
     <section class="friends">
@@ -40,6 +40,7 @@ export default {
   },
   data() {
     return {
+      isSearchListShowed: true,
       isSourceListShowed: true,
       isFriendsListShowed: false,
       friendsList: []
@@ -52,16 +53,39 @@ export default {
       // ...
     })
   },
-  watch: {
 
-  },
   methods: {
+    setSearchResults(){
+      this.isSearchListShowed=true;
+      console.log(1);
+    },
     buildFriendsList() {
       this.friendsList = [];
       for (let i = 0; i < this.sourceList.length; i++) {
         this.getUserFriends(this.sourceList[i].id)
       }
       this.isFriendsListShowed = true;
+    },
+    sortUsers(array, type) {
+      switch (type) {
+        case 0:
+          array.sort((a, b) => {
+            return a.last_name.toLowerCase().localeCompare(b.last_name.toLowerCase())
+          });
+          break;
+        case 1:
+          array.sort((a, b) => {
+            return a.first_name.toLowerCase().localeCompare(b.first_name.toLowerCase())
+          });
+          break;
+        case 2:
+          array.sort((a, b) => {
+            return b.commomFriends.length - a.commomFriends.length
+          });
+          break;
+        default:
+          return array
+      }
     },
     getUserFriends(id) {
       vk_api.getInfo(
@@ -77,10 +101,11 @@ export default {
             if (index === -1) {
               this.friendsList.push(el);
             }
-            else{
+            else {
               this.friendsList[index].commomFriends.push(id);
             }
-          })
+          });
+          this.sortUsers(this.friendsList, 0);
         }
       )
 
@@ -123,7 +148,36 @@ export default {
   padding-bottom: 30px;
 }
 
-.friends{
+.friends {
   width: 80vw;
+}
+
+
+@media (max-width:650px) {
+  .search {
+    width: 80vw;
+    max-width: 80vw;
+  }
+}
+
+@media (max-width:500px) {
+  .search {
+    width: 90vw;
+    max-width: 90vw;
+  }
+
+  .search-results {
+    width: 90vw;
+  }
+
+  .source-list {
+    width: 90vw;
+    margin-top: 30px;
+    padding-bottom: 30px;
+  }
+
+  .friends {
+    width: 90vw;
+  }
 }
 </style>
