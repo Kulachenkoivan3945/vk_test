@@ -8,7 +8,11 @@
         :title="'Количество результатов по вашему запросу : '" @onHide="isSearchListShowed = false">
       </UsersList>
     </section>
+
     <section class="source-list">
+      <button v-if="!isConnected" class="btn-add" @click="logIn">
+        Авторизоваться (без этого функционал недоступен)
+      </button>
       <button class="btn-add" v-if="!isSourceListShowed" @click="isSourceListShowed = true">Показать исходный
         список</button>
       <UsersList v-else :items="sourceList" :startState="isSourceListShowed" :mode="'source'"
@@ -43,7 +47,8 @@ export default {
       isSearchListShowed: true,
       isSourceListShowed: true,
       isFriendsListShowed: false,
-      friendsList: []
+      friendsList: [],
+      isConnected: false
     }
   },
   computed: {
@@ -55,8 +60,8 @@ export default {
   },
 
   methods: {
-    setSearchResults(){
-      this.isSearchListShowed=true;
+    setSearchResults() {
+      this.isSearchListShowed = true;
       console.log(1);
     },
     buildFriendsList() {
@@ -108,11 +113,28 @@ export default {
           this.sortUsers(this.friendsList, 0);
         }
       )
-
+    },
+    logIn() {
+      vk_api.checkConnection((res) => {
+        console.log(res);
+        if (res.status === "connected") {
+          this.isConnected = true;
+          return
+        }
+        vk_api.login((res) => {
+          console.log(res);
+          if (res.status ==="connected") {
+            this.isConnected = true;
+          }
+          else this.isConnected = false
+          return;
+        })
+      });
     }
 
   },
-  created() {
+  mounted() {
+    this.logIn();
   }
 }
 </script>
