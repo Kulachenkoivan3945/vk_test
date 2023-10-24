@@ -46,17 +46,14 @@ export default {
       return Math.ceil(this.items.length / this.showedCount);
     },
     showedResults() {
-      /* let results = JSON.parse(JSON.stringify(this.items)); */
       return JSON.parse(JSON.stringify(this.items)).splice(this.showedCount * this.activePage, this.showedCount);
     }
   },
   watch: {
     showedResults(newValue) {
+      if(this.pagesList.length<5) this.setPagesCount(this.pagesCount);
       if (newValue.length > 0) this.isShowed = true;
     },
-    items(newValue) {
-      this.setPagesCount(Math.ceil(newValue.length / this.showedCount));
-    }
   },
   methods: {
     setPagesCount(n) {
@@ -204,7 +201,7 @@ export default {
     }
   },
   mounted() {
-
+    this.setPagesCount(this.pagesCount);
   },
 
 }

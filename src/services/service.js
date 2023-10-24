@@ -12,14 +12,14 @@ class vk_api {
     VK.init({
       apiId: this.appID,
     });
-/*     VK.Auth.logout(); */
+    /*     VK.Auth.logout(); */
   }
 
-  checkConnection(cbFunc){
+  checkConnection(cbFunc) {
     VK.Auth.getLoginStatus(cbFunc);
   }
 
-  login(cbFunc){
+  login(cbFunc) {
     VK.Auth.login(cbFunc);
   }
   getInfo(request, params, cbFunc) {
