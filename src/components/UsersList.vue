@@ -54,18 +54,16 @@ export default {
     showedResults(newValue) {
       if (newValue.length > 0) this.isShowed = true;
     },
-    items() {
-      this.setPagesCount(Math.ceil(this.items.length / this.showedCount));
+    items(newValue) {
+      this.setPagesCount(Math.ceil(newValue.length / this.showedCount));
     }
   },
   methods: {
     setPagesCount(n) {
-      if (this.pagesList.length < 5) {
-        this.pagesList = [];
-        for (let i = 0; i < n; i++) {
-          this.pagesList.push(i);
-          if (i == 4) return;
-        }
+      this.pagesList = [];
+      for (let i = 0; i < n; i++) {
+        this.pagesList.push(i);
+        if (i == 4) return;
       }
     },
     getToPage(n) {
@@ -76,16 +74,21 @@ export default {
     },
     getNextPageNumber(n) {
       if (n == -2) {
-        this.pagesList = [];
-        for (let i = 5; i >=1; i--) {
-          this.pagesList.push(this.pagesCount - i);
+        if (this.pagesList.length == 5) {
+          this.pagesList = [];
+          for (let i = 5; i >= 1; i--) {
+            this.pagesList.push(this.pagesCount - i);
+          }
+          return this.pagesList[4];
         }
-        return this.pagesList[4];
+        else return this.pagesList[this.pagesList.length - 1];
       }
       if (n == -1) {
-        this.pagesList = [];
-        for (let i = 0; i <= 4; i++) {
-          this.pagesList.push(i);
+        if (this.pagesList.length == 5) {
+          this.pagesList = [];
+          for (let i = 0; i <= 4; i++) {
+            this.pagesList.push(i);
+          }
         }
         return this.pagesList[0];
       }
@@ -95,7 +98,12 @@ export default {
           if (this.activePage == this.pagesList[1]) {
             if (this.pagesList[0] == 0) return this.pagesList[0];
             else {
-              this.pagesList.forEach(el => el--);
+              let newArray = JSON.parse(JSON.stringify(this.pagesList));
+              this.pagesList = [];
+              newArray.forEach(el => {
+                el -= 1;
+                this.pagesList.push(el);
+              });
               return this.pagesList[1];
             }
           }
@@ -190,10 +198,13 @@ export default {
       }
     },
     hideList() {
-/*       this.isShowed = false; */
+      /*       this.isShowed = false; */
       this.$emit('onHide');
 
     }
+  },
+  mounted() {
+
   },
 
 }
