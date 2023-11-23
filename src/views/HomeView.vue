@@ -3,8 +3,8 @@
     <section class="search">
       <SearchBar @onSearched="setSearchResults"></SearchBar>
     </section>
-    <section class="search-results">
-      <UsersList :items="searchResults" v-if="isSearchListShowed" :startState="false" :mode="'search'"
+    <section class="search-results" v-if="isSearchListShowed">
+      <UsersList :items="searchResults" :startState="false" :mode="'search'"
         :title="'Количество результатов по вашему запросу : '" @onHide="isSearchListShowed = false">
       </UsersList>
     </section>
@@ -20,6 +20,12 @@
       </UsersList>
     </section>
     <section class="friends">
+      <div>
+        <label class="checkbox-id" for="checkboxFriends">Отображать число друзей пользователя (занимает много времени)
+          <input type="checkbox" name="checkboxFriends" id="checkboxFriends" v-model="isShowedWithFriendsCount"
+            @change="setUserFriends">
+        </label>
+      </div>
       <button class="btn-add" v-if="!isFriendsListShowed" @click="buildFriendsList">Построить</button>
       <UsersList v-else :items="friendsList" :startState="isFriendsListShowed" :mode="'friends'"
         :title="'Количество пользователей в списке друзей: '" @onHide="isFriendsListShowed = false">
@@ -48,7 +54,8 @@ export default {
       isSourceListShowed: true,
       isFriendsListShowed: false,
       friendsList: [],
-      isConnected: false
+      isConnected: false,
+      isShowedWithFriendsCount: false
     }
   },
   computed: {
@@ -62,14 +69,26 @@ export default {
   methods: {
     setSearchResults() {
       this.isSearchListShowed = true;
-      console.log(1);
+    },
+    //рекурсивыный вызов асинх функции для получаения списка друзей
+    recursionFriendsGet(i) {
+      this.getUserFriends(this.sourceList[i].id).then(
+        res => {
+          console.log(res)
+          i++;
+          //после обхода всех пользователей из исходного спика - вывод спика друзей
+          if (this.sourceList.length == i) {
+            this.sortUsers(this.friendsList, 0);
+            this.isFriendsListShowed = true;
+            this.setUserFriends();
+          }
+          else this.recursionFriendsGet(i);
+        })
     },
     buildFriendsList() {
       this.friendsList = [];
-      for (let i = 0; i < this.sourceList.length; i++) {
-        this.getUserFriends(this.sourceList[i].id)
-      }
-      this.isFriendsListShowed = true;
+      this.recursionFriendsGet(0);
+
     },
     sortUsers(array, type) {
       switch (type) {
@@ -93,24 +112,68 @@ export default {
       }
     },
     getUserFriends(id) {
-      vk_api.getInfo(
-        "friends.get",
-        {
-          user_id: id,
-          fields: "sex,photo_100,bdate",
-        },
-        (res) => {
-          res.response.items.forEach(el => {
-            el.commomFriends = [id];
-            let index = this.friendsList.findIndex(friend => friend.id === el.id)
-            if (index === -1) {
-              this.friendsList.push(el);
+      return new Promise((resolve => {
+        vk_api.getInfo(
+          "friends.get",
+          {
+            user_id: id,
+            fields: "sex,photo_100,bdate",
+          },
+          (res) => {
+            res.response.items.forEach(el => {
+              el.commomFriends = [id];
+              let index = this.friendsList.findIndex(friend => friend.id === el.id)
+              if (index === -1) {
+                this.friendsList.push(el);
+              }
+              else {
+                this.friendsList[index].commomFriends.push(id);
+              }
+            });
+            resolve('isOverNotLast ')
+          })
+      }))
+      /* this.sortUsers(this.friendsList, 0); */
+    },
+    setUserFriends() {
+      if (this.friendsList.length <= 0 || !this.isShowedWithFriendsCount) return;
+      let i = 0;
+      for (i = 0; i < this.friendsList.length; i++) {
+        if (this.friendsList[i].friendsCount === undefined) break
+      }
+      //получение кол-ва друзей пользователя происходит по таймеру с задержкой в 500мс
+      // из-за ограничения на кол-во запросов к апи в секунду
+      let watcher = setInterval(() => {
+        this.getUserFriendsCount(this.friendsList[i]);
+        i++;
+        if (!this.isShowedWithFriendsCount || this.friendsList.length == i) clearInterval(watcher);
+      }, 500);
+
+    },
+    getUserFriendsCount(item) {
+      let promise = new Promise((resolve, reject) => {
+        vk_api.getInfo(
+          "friends.get",
+          {
+            user_id: item.id
+          },
+          (res) => {
+            if (res.error) {
+              reject(res.error.error_msg);
             }
             else {
-              this.friendsList[index].commomFriends.push(id);
+              resolve(res.response.count)
             }
-          });
-          this.sortUsers(this.friendsList, 0);
+          })
+      })
+
+      promise.then(
+        result => {
+          item.friendsCount = result;
+        },
+        error => {
+          item.friendsCount = '-'
+          error;
         }
       )
     },
@@ -123,7 +186,7 @@ export default {
         }
         vk_api.login((res) => {
           console.log(res);
-          if (res.status ==="connected") {
+          if (res.status === "connected") {
             this.isConnected = true;
           }
           else this.isConnected = false
@@ -162,12 +225,32 @@ export default {
 
 .search-results {
   width: 80vw;
+  margin-top: 10px;
 }
 
 .source-list {
   width: 80vw;
   margin-top: 30px;
   padding-bottom: 30px;
+}
+
+.checkbox-id {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 5px;
+  padding-left: 0;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+.checkbox-id input {
+  margin: 0;
+  width: 40px;
+  height: 17px;
+  order: -1;
+  margin-right: 10px;
 }
 
 .friends {

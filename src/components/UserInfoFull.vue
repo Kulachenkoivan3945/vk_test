@@ -8,6 +8,7 @@
         <p class="bdate">Дата рождения: {{ bDate }}</p>
         <p class="sex">Пол: {{ sex }}</p>
         <p class="friends" v-if="mode == 'friends'">В друзьях у: {{ userInfo.commomFriends.length }} пользователя</p>
+        <p class="friends" v-if="mode == 'friends' && userInfo.friendsCount!== undefined">Кол-во друзей: {{ userInfo.friendsCount }}</p>
       </div>
     </div>
     <div class="actions" v-if="!isNoActions">

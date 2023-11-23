@@ -5,6 +5,12 @@
       <input type="search" id="searchBar" name="searchBar" v-model="query" @input="fastSearch" @keydown.enter="search"
         placeholder="Введите запрос...">
       <button @click="search">найти</button>
+      <label class="checkbox-id" for="IDSearch"><span>Искать по числовому id</span>
+        <input type="checkbox" name="IDSearch" id="IDSearch" 
+        v-model="isSearchByID"
+        @change="fastSearch">
+        
+      </label>
     </label>
 
     <transition name="fade">
@@ -33,6 +39,7 @@ export default {
   data() {
     return {
       query: '',
+      isSearchByID: false,
       autoCompleteResults: [],
       isSearched: false
     }
@@ -43,7 +50,7 @@ export default {
         document.querySelector('.search-container').style.maxHeight = 400 + 'px';
       }
       else {
-        document.querySelector('.search-container').style.maxHeight = '40px'
+        document.querySelector('.search-container').style.maxHeight = '70px'
       }
     },
     isSearched(newValue) {
@@ -51,22 +58,25 @@ export default {
         document.querySelector('.search-container').style.maxHeight = 400 + 'px';
       }
       else {
-        document.querySelector('.search-container').style.maxHeight = '40px'
+        document.querySelector('.search-container').style.maxHeight = '70px'
       }
     }
   },
   methods: {
     selectQueryItem(item) {
-      this.query = `${item.first_name} ${item.last_name}`;
+      if(!this.isSearchByID) this.query = `${item.first_name} ${item.last_name}`;
       /*       this.fastSearch(); */
       this.search();
     },
     search() {
       this.isSearched = false;
+      let query = '';
+      if(this.isSearchByID) query = 'id' + this.query;
+      else query = this.query;
       vk_api.getInfo(
         "users.search",
         {
-          q: this.query,
+          q: query,
           fields: "sex,photo_100,bdate",
           count: 100,
           language: "ru",
@@ -86,10 +96,13 @@ export default {
     },
     fastSearch: _.debounce(function () {
       this.isSearched = true;
+      let query = '';
+      if(this.isSearchByID) query = 'id' + this.query;
+      else query = this.query;
       vk_api.getInfo(
         "users.search",
         {
-          q: this.query,
+          q: query,
           fields: "photo_50",
           count: 5,
           language: "ru",
@@ -119,7 +132,7 @@ export default {
 <style scoped>
 .search-container {
   width: 100%;
-  max-height: 40px;
+  max-height: 70px;
   transition: all 0.6s ease-in-out;
 }
 
@@ -163,6 +176,21 @@ input {
   border: var(--border-light-gray);
 }
 
+.checkbox-id{
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 5px;
+  margin-top: 5px;
+}
+.checkbox-id input{
+  margin: 0;
+  width: 40px;
+  height: 17px;
+  order: -1;
+  
+}
 .auto-complete {
   border: var(--border-light-gray);
   margin-top: 15px;
@@ -181,6 +209,4 @@ input {
   transform: scale(1.1);
   color: white;
 }
-
-
 </style>

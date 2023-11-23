@@ -2,8 +2,8 @@ import VK from "vk-openapi";
 
 class vk_api {
   constructor() {
-    /* (this.appID = "51774176"), */
-      (this.appID = "51776175"),
+    (this.appID = "51774176"),
+      /* (this.appID = "51776175"), */
       (this.v = "5.154"),
       this.init();
   }
