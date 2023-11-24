@@ -28,7 +28,8 @@
       </div>
       <button class="btn-add" v-if="!isFriendsListShowed" @click="buildFriendsList">Построить</button>
       <UsersList v-else :items="friendsList" :startState="isFriendsListShowed" :mode="'friends'"
-        :title="'Количество пользователей в списке друзей: '" @onHide="isFriendsListShowed = false">
+        :title="'Количество пользователей в списке друзей: '" @onHide="isFriendsListShowed = false"
+        @onSortTypeChanged="changeSortType">
       </UsersList>
     </section>
   </div>
@@ -78,7 +79,7 @@ export default {
           i++;
           //после обхода всех пользователей из исходного спика - вывод спика друзей
           if (this.sourceList.length == i) {
-            this.sortUsers(this.friendsList, 0);
+            this.sortUsers(this.friendsList, 10);
             this.isFriendsListShowed = true;
             this.setUserFriends();
           }
@@ -90,7 +91,11 @@ export default {
       this.recursionFriendsGet(0);
 
     },
+    changeSortType(type){
+      this.sortUsers(this.friendsList, type)
+    },
     sortUsers(array, type) {
+      console.log(type);
       switch (type) {
         case 0:
           array.sort((a, b) => {
@@ -99,12 +104,69 @@ export default {
           break;
         case 1:
           array.sort((a, b) => {
-            return a.first_name.toLowerCase().localeCompare(b.first_name.toLowerCase())
+            return b.last_name.toLowerCase().localeCompare(a.last_name.toLowerCase())
           });
           break;
         case 2:
           array.sort((a, b) => {
+            return a.first_name.toLowerCase().localeCompare(b.first_name.toLowerCase())
+          });
+          break;
+        case 3:
+          array.sort((a, b) => {
+            return b.first_name.toLowerCase().localeCompare(a.first_name.toLowerCase())
+          });
+          break;
+        case 4:
+          array.sort((a, b) => {
+            return a.commomFriends.length - b.commomFriends.length
+          });
+          break;
+        case 5:
+          array.sort((a, b) => {
             return b.commomFriends.length - a.commomFriends.length
+          });
+          break;
+        case 6:
+          array.sort((a, b) => {
+            let aFull = a.first_name.toLowerCase() + a.last_name.toLowerCase();
+            let bFull = b.first_name.toLowerCase() + b.last_name.toLowerCase()
+            return aFull.localeCompare(bFull)
+          });
+          break;
+        case 7:
+          array.sort((a, b) => {
+            let aFull = a.first_name.toLowerCase() + a.last_name.toLowerCase();
+            let bFull = b.first_name.toLowerCase() + b.last_name.toLowerCase()
+            return bFull.localeCompare(aFull)
+          });
+          break;
+        case 8:
+          array.sort((a, b) => {
+            let aFull = a.last_name.toLowerCase() + a.first_name.toLowerCase();
+            let bFull = b.last_name.toLowerCase() + b.first_name.toLowerCase()
+            return aFull.localeCompare(bFull)
+          });
+          break;
+        case 9:
+          array.sort((a, b) => {
+            let aFull = a.last_name.toLowerCase() + a.first_name.toLowerCase();
+            let bFull = b.last_name.toLowerCase() + b.first_name.toLowerCase()
+            return bFull.localeCompare(aFull)
+          });
+          break;
+        case 10:
+          array.sort((a, b) => {
+            let aFirst = a.last_name.toLowerCase()[0] + a.first_name.toLowerCase()[0];
+            let bFirst = b.last_name.toLowerCase()[0] + b.first_name.toLowerCase()[0];
+            return aFirst.localeCompare(bFirst)
+          });
+          break;
+        case 11:
+          array.sort((a, b) => {
+            let aFirst = a.last_name.toLowerCase()[0] + a.first_name.toLowerCase()[0];
+            let bFirst = b.last_name.toLowerCase()[0] + b.first_name.toLowerCase()[0];
+            return bFirst.localeCompare(aFirst)
           });
           break;
         default:
@@ -255,6 +317,7 @@ export default {
 
 .friends {
   width: 80vw;
+  transition: all 0.5s ease;
 }
 
 
